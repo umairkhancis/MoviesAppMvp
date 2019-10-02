@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.noorifytech.moviesapp.data.dao.db.entity.MovieDetailEntity
 import com.noorifytech.moviesapp.data.dao.db.entity.MovieEntity
-import io.reactivex.Observable
+import io.reactivex.Single
 
 /**
  * Interface for database access for User related operations.
@@ -24,5 +24,5 @@ interface MoviesDBDao {
     fun getPopularMovies(): DataSource.Factory<Int, MovieEntity>
 
     @Query("SELECT * FROM MoviesDetails WHERE id = :movieId")
-    fun getMovieDetails(movieId: Int): Observable<MovieDetailEntity>
+    fun getMovieDetails(movieId: Int): Single<MovieDetailEntity>
 }

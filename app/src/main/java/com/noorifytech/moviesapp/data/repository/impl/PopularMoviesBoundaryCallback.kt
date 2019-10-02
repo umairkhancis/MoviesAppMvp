@@ -3,17 +3,21 @@ package com.noorifytech.moviesapp.data.repository.impl
 import androidx.paging.PagedList
 import com.noorifytech.moviesapp.common.MovieMapper
 import com.noorifytech.moviesapp.data.dao.backend.MoviesBackendDao
+import com.noorifytech.moviesapp.data.dao.backend.dto.ApiResponse
 import com.noorifytech.moviesapp.data.dao.backend.dto.ApiSuccessResponse
+import com.noorifytech.moviesapp.data.dao.backend.dto.MoviesListResponse
 import com.noorifytech.moviesapp.data.dao.db.MoviesDBDao
 import com.noorifytech.moviesapp.data.repository.vo.MovieVO
-import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
+import io.reactivex.Observer
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 class PopularMoviesBoundaryCallback(
     private val moviesDBDao: MoviesDBDao,
     private val moviesApiDao: MoviesBackendDao,
     private val movieMapper: MovieMapper
-) : PagedList.BoundaryCallback<MovieVO>(), CoroutineScope {
+) : PagedList.BoundaryCallback<MovieVO>() {
 
     @Volatile
     private var isInProgress: Boolean = false
@@ -31,31 +35,37 @@ class PopularMoviesBoundaryCallback(
 
         if (isInProgress) return
 
-        launch(Dispatchers.IO) {
-            isInProgress = true
+        isInProgress = true
 
-            val response =
-                moviesApiDao.getPopularMovies(nextPage)
+        moviesApiDao.getPopularMovies(nextPage)
+            .subscribeOn(Schedulers.io())
+            .subscribe(object : Observer<ApiResponse<MoviesListResponse>> {
 
-            if (response is ApiSuccessResponse) {
-                val movieEntities = movieMapper.toMovies(response.body)
-                moviesDBDao.insert(movieEntities)
-            } else {
-                println("return error to the view")
-            }
+                override fun onNext(response: ApiResponse<MoviesListResponse>) {
+                    Timber.i("onNext")
 
-            isInProgress = false
-        }
+                    if (response is ApiSuccessResponse) {
+                        val movieEntities = movieMapper.toMovies(response.body)
+                        moviesDBDao.insert(movieEntities)
+                    } else {
+                        // TODO set observable for the view
+                    }
+                }
 
+                override fun onError(e: Throwable) {
+                    Timber.e("onError")
+                    // TODO set observable for the view
+                }
+
+                override fun onComplete() {
+                    Timber.i("onComplete")
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    Timber.i("onSubscribe")
+                }
+            })
+
+        isInProgress = false
     }
-
-    override val coroutineContext: CoroutineContext
-        get() = job + Dispatchers.Main + handler
-
-    private var job = Job()
-
-    private var handler = CoroutineExceptionHandler { _, throwable ->
-        println("${throwable.message}")
-    }
-
 }

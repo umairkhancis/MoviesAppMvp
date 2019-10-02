@@ -4,7 +4,7 @@ import android.app.Application
 import com.noorifytech.moviesapp.BuildConfig
 import timber.log.Timber
 
-class MoviesApp : Application() {
+class MoviesAppMvp : Application() {
     override fun onCreate() {
         super.onCreate()
 

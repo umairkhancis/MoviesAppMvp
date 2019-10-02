@@ -1,13 +1,14 @@
 package com.noorifytech.moviesapp.data.repository.impl
 
-import androidx.lifecycle.LiveData
-import androidx.paging.LivePagedListBuilder
+import androidx.paging.DataSource
 import androidx.paging.PagedList
+import androidx.paging.RxPagedListBuilder
 import com.noorifytech.moviesapp.common.MovieMapper
 import com.noorifytech.moviesapp.data.dao.backend.MoviesBackendDao
 import com.noorifytech.moviesapp.data.dao.db.MoviesDBDao
 import com.noorifytech.moviesapp.data.repository.MoviesRepository
 import com.noorifytech.moviesapp.data.repository.vo.MovieVO
+import io.reactivex.Observable
 
 class MoviesRepositoryImpl(
     private val moviesDBDao: MoviesDBDao,
@@ -15,7 +16,7 @@ class MoviesRepositoryImpl(
     private val movieMapper: MovieMapper
 ) : MoviesRepository {
 
-    override fun getPopularMovies(): LiveData<PagedList<MovieVO>> {
+    override fun getPopularMovies(): Observable<PagedList<MovieVO>> {
         val config = PagedList.Config.Builder()
             .setPageSize(PAGE_SIZE)
             .setInitialLoadSizeHint(PAGE_SIZE)
@@ -23,14 +24,17 @@ class MoviesRepositoryImpl(
             .setEnablePlaceholders(false)
             .build()
 
-        val boundaryCallback = PopularMoviesBoundaryCallback(moviesDBDao, moviesBackendDao, MovieMapper)
-        val factory = moviesDBDao.getPopularMovies().map { movieMapper.toMovieVO(it) }
+        val boundaryCallback =
+            PopularMoviesBoundaryCallback(moviesDBDao, moviesBackendDao, MovieMapper)
 
-        val livePagedListBuilder: LivePagedListBuilder<Int, MovieVO> =
-            LivePagedListBuilder(factory, config)
-            .setBoundaryCallback(boundaryCallback)
+        val factory: DataSource.Factory<Int, MovieVO> = moviesDBDao.getPopularMovies()
+            .map { movieMapper.toMovieVO(it) }
 
-        return livePagedListBuilder.build()
+        val rxPagedListBuilder: RxPagedListBuilder<Int, MovieVO> =
+            RxPagedListBuilder(factory, config)
+                .setBoundaryCallback(boundaryCallback)
+
+        return rxPagedListBuilder.buildObservable()
     }
 
     companion object {

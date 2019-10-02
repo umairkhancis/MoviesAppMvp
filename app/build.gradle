@@ -9,7 +9,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.noorifytech.moviesapp"
+        applicationId "com.noorifytech.moviesappmvp"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
@@ -28,6 +28,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
@@ -46,37 +47,25 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.0.7'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-    // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.2"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1"
-
     //Paging
     def pagingVersion = '2.1.0'
     implementation "androidx.paging:paging-runtime:$pagingVersion"
-    implementation "androidx.paging:paging-runtime-ktx:$pagingVersion"
+    implementation "androidx.paging:paging-rxjava2:$pagingVersion" // For Kotlin use paging-rxjava2-ktx
 
     // Logging
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'org.slf4j:slf4j-api:1.7.26'
-    implementation 'com.github.tony19:logback-android:2.0.0'
 
     // room database
     def room_version = "2.1.0"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
     implementation "androidx.room:room-ktx:$room_version" // Kotlin Extensions and Coroutines support for Room
+
+    // Testing
     testImplementation "androidx.room:room-testing:$room_version" // Test helpers
-
-    // ViewModel
-    def lifecycle_version = "2.1.0"
-    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
-
-    // Transformation from Rx Observable to LiveData
-    implementation 'android.arch.lifecycle:reactivestreams:1.1.1'
-
     testImplementation 'junit:junit:4.12'
+
+    // Android Instrumentation Testing
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }

@@ -1,9 +1,9 @@
 package com.noorifytech.moviesapp.data.repository
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
 import com.noorifytech.moviesapp.data.repository.vo.MovieVO
+import io.reactivex.Observable
 
 interface MoviesRepository {
-    fun getPopularMovies(): LiveData<PagedList<MovieVO>>
+    fun getPopularMovies(): Observable<PagedList<MovieVO>>
 }

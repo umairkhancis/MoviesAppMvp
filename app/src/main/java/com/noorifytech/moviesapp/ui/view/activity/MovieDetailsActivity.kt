@@ -11,7 +11,7 @@ import com.noorifytech.moviesapp.ui.factory.MoviesAppMvpFactory
 import com.noorifytech.moviesapp.ui.presenter.MovieDetailsPresenter
 import com.noorifytech.moviesapp.ui.view.MovieDetailsView
 import com.noorifytech.moviesapp.ui.view.MovieDetailsView.Companion.MOVIE_ID_KEY
-import kotlinx.android.synthetic.main.activity_movies_list.*
+import kotlinx.android.synthetic.main.activity_movie_details.*
 
 class MovieDetailsActivity : AppCompatActivity(), MovieDetailsView {
 
@@ -58,7 +58,7 @@ class MovieDetailsActivity : AppCompatActivity(), MovieDetailsView {
 
     override fun showNoContent() {
         Snackbar.make(
-            movies_list_root,
+            movie_details_root,
             R.string.error_no_content_message,
             Snackbar.LENGTH_LONG
         ).show()
@@ -66,7 +66,7 @@ class MovieDetailsActivity : AppCompatActivity(), MovieDetailsView {
 
     override fun showNoConnection() {
         Snackbar.make(
-            movies_list_root,
+            movie_details_root,
             R.string.no_internet,
             Snackbar.LENGTH_LONG
         ).show()
@@ -74,7 +74,7 @@ class MovieDetailsActivity : AppCompatActivity(), MovieDetailsView {
 
     override fun showError() {
         Snackbar.make(
-            movies_list_root,
+            movie_details_root,
             R.string.error_generic_message,
             Snackbar.LENGTH_LONG
         ).show()

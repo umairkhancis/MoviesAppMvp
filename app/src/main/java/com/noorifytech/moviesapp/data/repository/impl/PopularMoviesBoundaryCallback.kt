@@ -3,8 +3,6 @@ package com.noorifytech.moviesapp.data.repository.impl
 import androidx.paging.PagedList
 import com.noorifytech.moviesapp.common.MovieMapper
 import com.noorifytech.moviesapp.data.dao.backend.MoviesBackendDao
-import com.noorifytech.moviesapp.data.dao.backend.dto.ApiResponse
-import com.noorifytech.moviesapp.data.dao.backend.dto.ApiSuccessResponse
 import com.noorifytech.moviesapp.data.dao.backend.dto.MoviesListResponse
 import com.noorifytech.moviesapp.data.dao.db.MoviesDBDao
 import com.noorifytech.moviesapp.data.repository.vo.MovieVO
@@ -37,19 +35,16 @@ class PopularMoviesBoundaryCallback(
 
         isInProgress = true
 
+        Timber.i("nextPage = $nextPage")
         moviesApiDao.getPopularMovies(nextPage)
             .subscribeOn(Schedulers.io())
-            .subscribe(object : Observer<ApiResponse<MoviesListResponse>> {
+            .subscribe(object : Observer<MoviesListResponse> {
 
-                override fun onNext(response: ApiResponse<MoviesListResponse>) {
-                    Timber.i("onNext")
+                override fun onNext(response: MoviesListResponse) {
+                    Timber.i("onNext: page = ${response.page}")
 
-                    if (response is ApiSuccessResponse) {
-                        val movieEntities = movieMapper.toMovies(response.body)
-                        moviesDBDao.insert(movieEntities)
-                    } else {
-                        // TODO set observable for the view
-                    }
+                    val movieEntities = movieMapper.toMovies(response)
+                    moviesDBDao.insert(movieEntities)
                 }
 
                 override fun onError(e: Throwable) {

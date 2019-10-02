@@ -1,4 +1,4 @@
-package com.noorifytech.moviesapp.ui.adapter
+package com.noorifytech.moviesapp.ui.view.adapter
 
 import android.content.Context
 import android.view.LayoutInflater

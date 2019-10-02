@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.noorifytech.moviesapp.R
 import com.noorifytech.moviesapp.data.repository.vo.MovieVO
-import com.noorifytech.moviesapp.ui.adapter.MoviesPagedListAdapter
 import com.noorifytech.moviesapp.ui.factory.MoviesListFactory
 import com.noorifytech.moviesapp.ui.presenter.MoviesListPresenter
 import com.noorifytech.moviesapp.ui.view.MoviesListView
+import com.noorifytech.moviesapp.ui.view.adapter.MoviesPagedListAdapter
 import kotlinx.android.synthetic.main.activity_movies_list.*
 
 class MoviesListActivity : AppCompatActivity(), MoviesListView {

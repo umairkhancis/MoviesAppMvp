@@ -10,10 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.noorifytech.moviesapp.R
 import com.noorifytech.moviesapp.data.repository.vo.MovieVO
+import com.noorifytech.moviesapp.ui.view.callback.MoviesListCellCallback
 import kotlinx.android.synthetic.main.activity_movies_list_item.view.*
 
-class MoviesPagedListAdapter(private val context: Context) :
-    PagedListAdapter<MovieVO, MoviesPagedListAdapter.MoviesViewHolder>(MOVIE_COMPARATOR) {
+class MoviesPagedListAdapter(
+    private val context: Context,
+    private val callback: MoviesListCellCallback
+) : PagedListAdapter<MovieVO, MoviesPagedListAdapter.MoviesViewHolder>(MOVIE_COMPARATOR) {
 
     override fun onBindViewHolder(holder: MoviesViewHolder, position: Int) {
         val movie = getItem(position)
@@ -25,10 +28,13 @@ class MoviesPagedListAdapter(private val context: Context) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesViewHolder {
         val viewItem = LayoutInflater.from(context)
             .inflate(R.layout.activity_movies_list_item, parent, false)
-        return MoviesViewHolder(viewItem)
+        return MoviesViewHolder(viewItem, callback)
     }
 
-    class MoviesViewHolder(private val viewItem: View) : RecyclerView.ViewHolder(viewItem) {
+    class MoviesViewHolder(
+        private val viewItem: View,
+        private val callback: MoviesListCellCallback
+    ) : RecyclerView.ViewHolder(viewItem) {
 
         fun bind(context: Context, movie: MovieVO) {
             viewItem.movieNameTV.text = movie.name
@@ -38,6 +44,10 @@ class MoviesPagedListAdapter(private val context: Context) :
                 .load(movie.imageUrl)
                 .placeholder(R.mipmap.ic_launcher)
                 .into(viewItem.movieImageIV)
+
+            viewItem.setOnClickListener {
+                callback.onMovieSelected(movie.id, adapterPosition)
+            }
         }
 
     }

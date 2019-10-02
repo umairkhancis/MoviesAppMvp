@@ -9,13 +9,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.noorifytech.moviesapp.R
 import com.noorifytech.moviesapp.data.repository.vo.MovieVO
-import com.noorifytech.moviesapp.ui.factory.MoviesListFactory
+import com.noorifytech.moviesapp.ui.factory.MoviesAppMvpFactory
+import com.noorifytech.moviesapp.ui.navigation.NavigationManager
 import com.noorifytech.moviesapp.ui.presenter.MoviesListPresenter
 import com.noorifytech.moviesapp.ui.view.MoviesListView
 import com.noorifytech.moviesapp.ui.view.adapter.MoviesPagedListAdapter
+import com.noorifytech.moviesapp.ui.view.callback.MoviesListCellCallback
 import kotlinx.android.synthetic.main.activity_movies_list.*
 
-class MoviesListActivity : AppCompatActivity(), MoviesListView {
+class MoviesListActivity : AppCompatActivity(), MoviesListView, MoviesListCellCallback {
 
     private lateinit var moviesListAdapter: MoviesPagedListAdapter
     private lateinit var presenter: MoviesListPresenter
@@ -30,8 +32,20 @@ class MoviesListActivity : AppCompatActivity(), MoviesListView {
         init()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        presenter.onDetach()
+    }
+
+//    =======================  MoviesListView Implementation =======================
+
     override fun showList(list: PagedList<MovieVO>) {
         moviesListAdapter.submitList(list)
+    }
+
+    override fun showMovieDetailsScreen(movieId: Int) {
+        NavigationManager.navigateToMovieDetailsScreen(this, movieId)
     }
 
     override fun showLoading() {
@@ -66,11 +80,17 @@ class MoviesListActivity : AppCompatActivity(), MoviesListView {
         ).show()
     }
 
+//    ============================== MoviesListCell Interaction Methods ==============================
+
+    override fun onMovieSelected(movieId: Int, position: Int) {
+        presenter.onMovieSelected(movieId)
+    }
+
 //    ==============================  Private Methods ==============================
 
     private fun init() {
         // Prepare presenter to take up the control
-        presenter = MoviesListFactory.createMoviesListPresenter()
+        presenter = MoviesAppMvpFactory.createMoviesListPresenter()
         presenter.initView(this)
         presenter.onAttach()
 
@@ -82,7 +102,7 @@ class MoviesListActivity : AppCompatActivity(), MoviesListView {
         moviesListRV.layoutManager = LinearLayoutManager(this)
         moviesListRV.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
-        moviesListAdapter = MoviesPagedListAdapter(this)
+        moviesListAdapter = MoviesPagedListAdapter(this, this)
         moviesListRV.adapter = moviesListAdapter
     }
 }

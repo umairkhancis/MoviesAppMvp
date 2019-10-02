@@ -14,19 +14,26 @@ class MoviesListPresenterImpl(private val getPopularMoviesUseCase: GetPopularMov
 
     override fun onAttach() {
 
+        view.showLoading()
         val callback = object : DisposableObserver<PagedList<MovieVO>>() {
             override fun onNext(pagedList: PagedList<MovieVO>) {
                 Timber.i("onNext: pagedList.size = ${pagedList.size}")
 
+                view.hideLoading()
                 view.showList(pagedList)
             }
 
             override fun onError(e: Throwable) {
                 Timber.e("onError: ${e.message}")
+
+                view.hideLoading()
+                view.showError()
             }
 
             override fun onComplete() {
                 Timber.i("onComplete")
+
+                view.showError()
             }
 
         }
@@ -35,5 +42,9 @@ class MoviesListPresenterImpl(private val getPopularMoviesUseCase: GetPopularMov
             business = getPopularMoviesUseCase.getPopularMovies(),
             callback = callback
         )
+    }
+
+    override fun onMovieSelected(movieId: Int) {
+        view.showMovieDetailsScreen(movieId)
     }
 }

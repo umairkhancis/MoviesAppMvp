@@ -6,4 +6,5 @@ import com.noorifytech.moviesapp.ui.base.BaseLoadableContentView
 
 interface MoviesListView : BaseLoadableContentView {
     fun showList(list: PagedList<MovieVO>)
+    fun showMovieDetailsScreen(movieId: Int)
 }

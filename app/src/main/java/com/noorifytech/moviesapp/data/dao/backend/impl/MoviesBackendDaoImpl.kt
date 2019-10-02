@@ -30,28 +30,24 @@ class MoviesBackendDaoImpl(private val api: TMDBApi) : MoviesBackendDao {
                 }
             }
 
-    override fun getMovieDetails(movieId: Int): Observable<MovieDto> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-//    override fun getMovieDetails(movieId: Int): Observable<MovieDto> =
-//        api.getMovieDetails(movieId = movieId)
-//            .map { ApiResponse.create(it) }
-//            .flatMap { apiResponse: ApiResponse<MovieDto> ->
-//                when (apiResponse) {
-//                    is ApiSuccessResponse -> Observable.just(apiResponse.body)
-//                    is ApiErrorResponse -> Observable.error(
-//                        AppException(
-//                            ErrorCodes.BACKEND_ERROR,
-//                            apiResponse.errorMessage
-//                        )
-//                    )
-//                    else -> Observable.error(
-//                        AppException(
-//                            ErrorCodes.GENERIC_ERROR,
-//                            "generic error"
-//                        )
-//                    )
-//                }
-//            }
+    override fun getMovieDetails(movieId: Int): Observable<MovieDto> =
+        api.getMovieDetails(movieId = movieId)
+            .map { ApiResponse.create(it) }
+            .flatMap { apiResponse: ApiResponse<MovieDto> ->
+                when (apiResponse) {
+                    is ApiSuccessResponse -> Observable.just(apiResponse.body)
+                    is ApiErrorResponse -> Observable.error(
+                        AppException(
+                            ErrorCodes.BACKEND_ERROR,
+                            apiResponse.errorMessage
+                        )
+                    )
+                    else -> Observable.error(
+                        AppException(
+                            ErrorCodes.GENERIC_ERROR,
+                            "generic error"
+                        )
+                    )
+                }
+            }
 }

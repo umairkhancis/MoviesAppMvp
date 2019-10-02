@@ -6,6 +6,7 @@ import androidx.paging.RxPagedListBuilder
 import com.noorifytech.moviesapp.common.MovieMapper
 import com.noorifytech.moviesapp.data.dao.backend.MoviesBackendDao
 import com.noorifytech.moviesapp.data.dao.db.MoviesDBDao
+import com.noorifytech.moviesapp.data.dao.db.entity.MovieDetailEntity
 import com.noorifytech.moviesapp.data.repository.MoviesRepository
 import com.noorifytech.moviesapp.data.repository.vo.MovieDetailVO
 import com.noorifytech.moviesapp.data.repository.vo.MovieVO
@@ -38,29 +39,25 @@ class MoviesRepositoryImpl(
         return rxPagedListBuilder.buildObservable()
     }
 
-    override fun getMovieDetails(movieId: Int): Observable<MovieDetailVO> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    //    override fun getMovieDetails(movieId: Int): Observable<MovieDetailVO> =
-//        moviesDBDao.getMovieDetails(movieId)
-//            .flatMap { movieDetailEntity: MovieDetailEntity? ->
-//                if (movieDetailEntity != null) {
-//                    Observable.just(movieMapper.toMovieDetailVO(movieDetailEntity))
-//                } else {
-//                    moviesBackendDao.getMovieDetails(movieId)
-//                        .flatMap {
-//                            Observable.just(movieMapper.toMovieDetailEntity(it))
-//                        }
-//                        .flatMap {
-//                            moviesDBDao.insert(it)
-//                            Observable.just(it)
-//                        }
-//                        .flatMap {
-//                            Observable.just(movieMapper.toMovieDetailVO(it))
-//                        }
-//                }
-//            }
+    override fun getMovieDetails(movieId: Int): Observable<MovieDetailVO> =
+        moviesDBDao.getMovieDetails(movieId)
+            .flatMap { movieDetailEntity: MovieDetailEntity? ->
+                if (movieDetailEntity != null) {
+                    Observable.just(movieMapper.toMovieDetailVO(movieDetailEntity))
+                } else {
+                    moviesBackendDao.getMovieDetails(movieId)
+                        .flatMap {
+                            Observable.just(movieMapper.toMovieDetailEntity(it))
+                        }
+                        .flatMap {
+                            moviesDBDao.insert(it)
+                            Observable.just(it)
+                        }
+                        .flatMap {
+                            Observable.just(movieMapper.toMovieDetailVO(it))
+                        }
+                }
+            }
 
     companion object {
         const val PAGE_SIZE = 20
